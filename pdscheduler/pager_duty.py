@@ -142,7 +142,7 @@ class PagerDuty:
         current_schedule = self.get_schedule(schedule_id=schedule_id)
 
         for current_layer in current_schedule["schedule"]["schedule_layers"]:
-            for layer in data['schedule_layers']:
+            for layer in data["schedule_layers"]:
                 if current_layer["name"] == layer["name"]:
                     layer["id"] = current_layer["id"]
                     break
