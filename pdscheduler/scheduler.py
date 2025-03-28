@@ -116,19 +116,34 @@ class PagerDutyScheduler:
 
         self.schedule = generator.generate_data()
 
-    def create_schedule(self):
-        if not self.schedule:
-            raise ValueError(
-                "Schedule not generated. Please call generate_schedule() first."
-            )
-
-        result = self.pager_duty.create_schedule(data=self.schedule)
-
+    def _handle_schedule_response(self, result):
         if not result:
-            raise ValueError("Failed to create schedule. Please check the data.")
+            raise ValueError("Failed to create/update schedule. Please check the data.")
 
-        result_data = result.get("schedule")
+        result_data = result.json().get("schedule")
+        if not result_data:
+            raise ValueError("Failed to create/update schedule. No schedule data returned.")
 
         print(
-            f"successfully created schedule. Schedule ID: {result_data['id']}, Name: {result_data['name']}, schedule can be found on {result_data['final_schedule']['html_url']}"
+            f"Successfully created schedule. Schedule ID: {result_data['id']}, "
+            f"Name: {result_data['name']}, schedule can be found on {result_data['html_url']}"
         )
+
+    def _ensure_schedule_exists(self):
+        if not self.schedule:
+            raise ValueError("Schedule not generated. Please call generate_schedule() first.")
+
+    def create_schedule(self):
+        self._ensure_schedule_exists()
+        result = self.pager_duty.create_schedule(data=self.schedule)
+        self._handle_schedule_response(result)
+
+    def update_schedule(self, schedule_id: str):
+        self._ensure_schedule_exists()
+        result = self.pager_duty.update_schedule(schedule_id=schedule_id, data=self.schedule)
+        self._handle_schedule_response(result)
+
+    def create_or_update_schedule(self):
+        self._ensure_schedule_exists()
+        result = self.pager_duty.create_or_update_schedule(data=self.schedule)
+        self._handle_schedule_response(result)

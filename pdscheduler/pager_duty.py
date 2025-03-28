@@ -122,7 +122,7 @@ class PagerDuty:
         result = None
         try:
             result = requests.post(
-                url="{BASE_URL}/schedules",
+                url=f"{BASE_URL}/schedules",
                 headers=self.headers(),
                 data=json.dumps(data),
             )
@@ -140,9 +140,14 @@ class PagerDuty:
         :return: Updated schedule
         """
         current_schedule = self.get_schedule(schedule_id=schedule_id)
-        layers_ids = [
-            layer["id"] for layer in current_schedule["schedule"]["schedule_layers"]
-        ]
+
+        for current_layer in current_schedule["schedule"]["schedule_layers"]:
+            for layer in data['schedule_layers']:
+                if current_layer["name"] == layer["name"]:
+                    layer["id"] = current_layer["id"]
+                    break
+
+        data["id"] = schedule_id
 
         result = None
         try:
@@ -162,10 +167,10 @@ class PagerDuty:
         :param name: A schedule name
         """
 
-        name = data["schedule"]["name"]
+        name = data["name"]
         schedules = self.schedules(query=name)
         if schedules:
             assert len(schedules) == 1
-            self.update_schedule(schedule_id=schedules[0]["id"], data=data)
+            return self.update_schedule(schedule_id=schedules[0]["id"], data=data)
         else:
-            self.create_schedule(name=name, data=data)
+            return self.create_schedule(data=data)
