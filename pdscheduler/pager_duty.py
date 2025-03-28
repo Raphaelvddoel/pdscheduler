@@ -5,6 +5,8 @@ import requests
 
 from pdpyras import APISession, PDClientError
 
+BASE_URL = "https://api.pagerduty.com"
+
 
 class PDSchedulingException(Exception):
     def __init__(self, message, extra_info=None):
@@ -21,7 +23,7 @@ class PDSchedulingNetworkException(PDSchedulingException):
         message,
         status_code: Optional[int] = None,
         reason: Optional[str] = None,
-        extra_info: Optional[str] = None
+        extra_info: Optional[str] = None,
     ):
         self.status_code = status_code
         self.reason = reason or "Unknown"
@@ -35,12 +37,12 @@ def _create_scheduling_exception(result):
         message = "PagerDuty request failed with unknown status code"
         extra_info = "No result returned from the request."
     else:
-        result_json = result.json() if hasattr(result, 'json') else {}
+        result_json = result.json() if hasattr(result, "json") else {}
 
         # Handle error if present
-        error_code = result_json.get('error', {}).get('code', 'N/A')
-        error_message = result_json.get('error', {}).get('message', 'N/A')
-        error_details = result_json.get('error', {}).get('errors', {})
+        error_code = result_json.get("error", {}).get("code", "N/A")
+        error_message = result_json.get("error", {}).get("message", "N/A")
+        error_details = result_json.get("error", {}).get("errors", {})
 
         message = f"PagerDuty request failed: {result.reason}"
         extra_info = f"Error Code: {error_code}, Message: {error_message}, Details: {error_details}"
@@ -49,7 +51,7 @@ def _create_scheduling_exception(result):
         message=f"{message}. Additional Info: {extra_info}",
         status_code=None if result is None else result.status_code,
         reason=None if result is None else result.reason,
-        extra_info=extra_info
+        extra_info=extra_info,
     )
 
 
@@ -91,7 +93,7 @@ class PagerDuty:
         result = None
         try:
             result = requests.get(
-                url=f"https://api.pagerduty.com/schedules?limit=100&query={query}",
+                url=f"{BASE_URL}/schedules?limit=100&query={query}",
                 headers=self.headers(),
             )
             result.raise_for_status()
@@ -108,7 +110,7 @@ class PagerDuty:
         result = None
         try:
             result = requests.get(
-                url=f"https://api.pagerduty.com/schedules/{schedule_id}",
+                url=f"{BASE_URL}/schedules/{schedule_id}",
                 headers=self.headers(),
             )
             result.raise_for_status()
@@ -116,12 +118,11 @@ class PagerDuty:
             raise _create_scheduling_exception(result) from e
         return result.json()
 
-
     def create_schedule(self, *, data: dict):
         result = None
         try:
             result = requests.post(
-                url="https://api.pagerduty.com/schedules",
+                url="{BASE_URL}/schedules",
                 headers=self.headers(),
                 data=json.dumps(data),
             )
@@ -130,10 +131,7 @@ class PagerDuty:
             raise _create_scheduling_exception(result) from e
         return result
 
-
-    def update_schedule(
-        self, *, schedule_id: str, data: dict
-    ):
+    def update_schedule(self, *, schedule_id: str, data: dict):
         """Updates existing schedule in place
 
         :param schedule_id: A schedule id
@@ -149,7 +147,7 @@ class PagerDuty:
         result = None
         try:
             result = requests.put(
-                url=f"https://api.pagerduty.com/schedules/{schedule_id}",
+                url=f"{BASE_URL}/schedules/{schedule_id}",
                 headers=self.headers(),
                 data=json.dumps(data),
             )
