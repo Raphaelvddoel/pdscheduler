@@ -3,7 +3,7 @@ from typing import List
 import datetime
 import csv
 
-from pager_duty_user import PagerDutyUser
+from pdscheduler.pager_duty_user import PagerDutyUser
 
 
 class ScheduleCreator:

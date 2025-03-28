@@ -1,9 +1,9 @@
 from typing import Dict, List, Optional, Set, Union
 
 import pytz
-from pager_duty import PagerDuty
-from pager_duty_user import PagerDutyUser
-from schedule_creator import ScheduleCreator
+from pdscheduler.pager_duty import PagerDuty
+from pdscheduler.pager_duty_user import PagerDutyUser
+from pdscheduler.schedule_creator import ScheduleCreator
 
 
 class PagerDutyScheduler:
@@ -116,4 +116,11 @@ class PagerDutyScheduler:
                 "Schedule not generated. Please call generate_schedule() first."
             )
 
-        self.pager_duty.create_schedule(data=self.schedule)
+        result = self.pager_duty.create_schedule(data=self.schedule)
+
+        if not result:
+            raise ValueError("Failed to create schedule. Please check the data.")
+
+        result_data = result.get("schedule")
+
+        print(f"successfully created schedule. Schedule ID: {result_data['id']}, Name: {result_data['name']}, schedule can be found on {result_data['final_schedule']['html_url']}")

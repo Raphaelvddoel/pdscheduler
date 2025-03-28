@@ -16,7 +16,6 @@ class PagerDutyUser:
         Raises:
             KeyError: If any required fields are missing from the data
         """
-        # Extract required fields - will raise KeyError naturally if missing
         self.id = data["id"]
         self.email = data["email"]
         self.name = data["summary"]
