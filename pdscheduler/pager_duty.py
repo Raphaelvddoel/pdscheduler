@@ -7,7 +7,9 @@ from pdpyras import APISession, PDClientError
 
 
 class PDSchedulingException(Exception):
-    pass
+    def __init__(self, message, extra_info=None):
+        super().__init__(message)
+        self.extra_info = extra_info
 
 
 class PDSchedulingNetworkException(PDSchedulingException):
@@ -15,23 +17,39 @@ class PDSchedulingNetworkException(PDSchedulingException):
     reason = ""
 
     def __init__(
-        self, message, status_code: Optional[int] = None, reason: Optional[str] = None
+        self,
+        message,
+        status_code: Optional[int] = None,
+        reason: Optional[str] = None,
+        extra_info: Optional[str] = None
     ):
         self.status_code = status_code
         self.reason = reason or "Unknown"
-        super().__init__(message)
+        self.extra_info = extra_info
+
+        super().__init__(message, extra_info=extra_info)
 
 
 def _create_scheduling_exception(result):
     if result is None:
         message = "PagerDuty request failed with unknown status code"
+        extra_info = "No result returned from the request."
     else:
+        result_json = result.json() if hasattr(result, 'json') else {}
+
+        # Handle error if present
+        error_code = result_json.get('error', {}).get('code', 'N/A')
+        error_message = result_json.get('error', {}).get('message', 'N/A')
+        error_details = result_json.get('error', {}).get('errors', {})
+
         message = f"PagerDuty request failed: {result.reason}"
+        extra_info = f"Error Code: {error_code}, Message: {error_message}, Details: {error_details}"
 
     return PDSchedulingNetworkException(
-        message=message,
+        message=f"{message}. Additional Info: {extra_info}",
         status_code=None if result is None else result.status_code,
         reason=None if result is None else result.reason,
+        extra_info=extra_info
     )
 
 
