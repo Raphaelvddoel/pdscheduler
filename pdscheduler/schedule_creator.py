@@ -31,6 +31,39 @@ class ScheduleCreator:
 
         self.schedule = {}
 
+    def validate(self):
+        if not self.name:
+            raise ValueError("Schedule name is required.")
+        if not self.description:
+            raise ValueError("Schedule description is required.")
+        if not self.days:
+            raise ValueError("Days of the week are required.")
+        if not self.timezone:
+            raise ValueError("Timezone is required.")
+        if not self.start_hour or not self.end_hour:
+            raise ValueError("Start and end hours are required.")
+        if not self.users:
+            raise ValueError("Users are required.")
+        if not self.file_path:
+            raise ValueError("CSV file path is required.")
+
+        self._validate_csv_file()
+
+    def _validate_csv_file(self):
+        try:
+            with open(self.file_path, "r") as file:
+                csv_reader = csv.reader(file)
+                # Check if the first row is a header
+                header = next(csv_reader)
+                if header != ["user_email", "week_day", "start_time", "end_time"]:
+                    raise ValueError(
+                        "CSV file must have the following headers: Email, Weekday, Start Time, End Time"
+                    )
+        except FileNotFoundError:
+            raise ValueError(f"CSV file not found at {self.file_path}")
+        except Exception as e:
+            raise ValueError(f"Error reading CSV file: {e}")
+
     def generate_data(self):
         self._set_general_data()
         self._generate_layers()

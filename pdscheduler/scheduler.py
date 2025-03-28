@@ -1,3 +1,4 @@
+import os
 from typing import Dict, List, Optional, Set, Union
 
 import pytz
@@ -185,9 +186,19 @@ class PagerDutyScheduler:
         Args:
             file_path (str): The path to the CSV file.
 
+        Raises:
+            ValueError: If the file_path is not a string or does not point to a valid CSV file.
+            FileNotFoundError: If the specified file does not exist.
+
         Returns:
             None
         """
+
+        if not file_path.endswith('.csv'):
+            raise ValueError("The file must have a .csv extension.")
+
+        if not os.path.isfile(file_path):
+            raise FileNotFoundError(f"The file at '{file_path}' does not exist.")
 
         self.file_path = file_path
 
@@ -212,6 +223,8 @@ class PagerDutyScheduler:
             self.users,
             self.file_path,
         )
+
+        generator.validate()
 
         self.schedule = generator.generate_data()
 
