@@ -17,6 +17,7 @@ class ScheduleCreator:
         start_hour: int,
         end_hour: int,
         users: List[PagerDutyUser],
+        file_path: str,
     ):
 
         self.name = name
@@ -26,6 +27,8 @@ class ScheduleCreator:
         self.start_hour = start_hour
         self.end_hour = end_hour
         self.users = users
+        self.file_path = file_path
+
         self.schedule = {}
 
     def generate_data(self):
@@ -63,16 +66,13 @@ class ScheduleCreator:
         ]
 
     def generate_restrictions(self):
-        file_location = "test_data.csv"
-        with open(file_location, "r") as file:
+        with open(self.file_path, "r") as file:
             csv_reader = csv.reader(file)
             # Skip the header (first row)
             next(csv_reader)
 
             for row in csv_reader:
-                # if a user is scheduled, it means it should be restricted by all others users
                 user = self._get_user_by_email(row[0])
-
                 self._add_restriction(user, row[1], row[2], row[3])
 
     def _add_restriction(

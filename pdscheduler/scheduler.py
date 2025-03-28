@@ -30,6 +30,7 @@ class PagerDutyScheduler:
         )
         self.timezone: str = "UTC"
         self.schedule: Optional[Dict] = None
+        self.file_path: Optional[str] = None
 
     def set_name(self, name: str):
         """Sets the name of the schedule."""
@@ -96,6 +97,10 @@ class PagerDutyScheduler:
         except pytz.UnknownTimeZoneError:
             raise ValueError(f"Invalid timezone: {timezone}")
 
+    def set_csv_file_location(self, file_path: str):
+        """Sets the file path for the CSV file."""
+        self.file_path = file_path
+
     def generate_schedule(self):
         """Generates a schedule for the week based on user availability"""
         generator = ScheduleCreator(
@@ -106,6 +111,7 @@ class PagerDutyScheduler:
             self.start_hour,
             self.end_hour,
             self.users,
+            self.file_path
         )
 
         self.schedule = generator.generate_data()
@@ -123,4 +129,6 @@ class PagerDutyScheduler:
 
         result_data = result.get("schedule")
 
-        print(f"successfully created schedule. Schedule ID: {result_data['id']}, Name: {result_data['name']}, schedule can be found on {result_data['final_schedule']['html_url']}")
+        print(
+            f"successfully created schedule. Schedule ID: {result_data['id']}, Name: {result_data['name']}, schedule can be found on {result_data['final_schedule']['html_url']}"
+        )
