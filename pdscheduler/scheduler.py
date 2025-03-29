@@ -194,7 +194,7 @@ class PagerDutyScheduler:
             None
         """
 
-        if not file_path.endswith('.csv'):
+        if not file_path.endswith(".csv"):
             raise ValueError("The file must have a .csv extension.")
 
         if not os.path.isfile(file_path):
