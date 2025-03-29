@@ -11,7 +11,9 @@ Due to limitations in the PagerDuty scheduling API, the schedule can only accomm
 ## Installation
 
 ### Method 1: pip
-*Still has to be implemented*
+```bash
+pip install pdscheduler
+```
 ### Method 2: Clone the repo
 ```bash
 git clone https://github.com/Raphaelvddoel/pdscheduler.git
@@ -82,5 +84,4 @@ Distributed under the MIT License. See [License](License) for more information.
 
 ## Acknowledgments
 
-This project is based on the work done by [skrypka/pdscheduling](https://github.com/skrypka/pdscheduling).  
-Thank you to the original author(s) for their contributions.
+This project is based on the work done by [skrypka/pdscheduling](https://github.com/skrypka/pdscheduling).
