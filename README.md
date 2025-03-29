@@ -49,7 +49,7 @@ To use PDscheduler, you will need an API access key.
 ### Step 3: Configure and run the script
 Here's an example of how to use PDscheduler
 ```python
-from pdscheduler.scheduler import PagerDutyScheduler
+from pdscheduler import PagerDutyScheduler
 
 # Initialize the scheduler with your PagerDuty API key
 scheduler = PagerDutyScheduler("your-api-key-here")
