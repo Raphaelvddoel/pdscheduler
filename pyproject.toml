@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "PDscheduler"
-version = "0.1.0"
+version = "0.2.0"
 description = "Automatically schedule and upload on-call rotations to PagerDuty from a CSV file"
 readme = "README.md"
 authors = [{name = "Raphael van den Doel"}]
